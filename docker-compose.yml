@@ -1,0 +1,25 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - SD_API_URL=http://sd-backend:8000/generate-image
+    depends_on:
+      - sd-backend
+
+  sd-backend:
+    build: ./sd-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./sd-backend/outputs:/app/outputs
