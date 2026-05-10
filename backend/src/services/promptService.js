@@ -41,27 +41,35 @@ try {
   throw new InternalServerErrorException("Failed to load prompt JSON files");
 }
 
+function pickRandom(list) {
+  if (!Array.isArray(list) || list.length === 0) return null;
+
+  const index = Math.floor(Math.random() * list.length);
+  return list[index];
+}
+
 function getCardPrompt(categoryData, groupName, cardId) {
   if (!cardId) return null;
 
   const groups = categoryData?.[groupName];
 
   if (!groups) {
-    throw new InvalidException(
-      `Group "${groupName}" not found`
-    );
+    throw new InvalidException(`Group "${groupName}" not found`);
   }
 
-  // Search through all sub-groups
   for (const subgroup of Object.values(groups)) {
     if (subgroup?.[cardId]) {
-      return subgroup[cardId];
+      const card = subgroup[cardId];
+
+      return {
+        ...card,
+        prompt_hint: pickRandom(card.prompt_hints),
+        negative_prompt_hint: pickRandom(card.negative_prompt_hints)
+      };
     }
   }
 
-  throw new InvalidException(
-    `Invalid card id: ${cardId}`
-  );
+  throw new InvalidException(`Invalid card id: ${cardId}`);
 }
 
 function weightedPrompt(text, weight) {
@@ -131,7 +139,7 @@ export async function buildPrompt(body) {
 
   const structuredPrompt = {
     subject,
-    language,
+    language: language || "en",
     selected_hints: [
       weightedPrompt(style?.prompt_hint, styleData.category_weight),
       weightedPrompt(emotion?.prompt_hint, emotionData.category_weight),
@@ -142,15 +150,14 @@ export async function buildPrompt(body) {
       )
     ].filter(Boolean),
     negative_prompt: [
-      style?.negative_prompt_hint,
-      emotion?.negative_prompt_hint,
-      texture?.negative_prompt_hint,
-      specialEffect?.negative_prompt_hint
+        style?.negative_prompt_hint,
+        emotion?.negative_prompt_hint,
+        texture?.negative_prompt_hint,
+        specialEffect?.negative_prompt_hint
     ]
-      .filter(Boolean)
-      .join(", ")
-  };
-
+        .filter(Boolean)
+        .join(", ")
+    };
   const llmInstruction = `
 You are an AI image prompt generator.
 

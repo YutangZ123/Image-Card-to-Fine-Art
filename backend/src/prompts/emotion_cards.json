@@ -20,8 +20,20 @@
         "display_name": "Happy",
         "description": "Bright uplifting emotional atmosphere.",
         "image" : "cards/happy_emotion.png",
-        "prompt_hint": "warm cheerful lighting, vibrant uplifting tones, bright joyful atmosphere",
-        "negative_prompt_hint": "dark gloomy lighting, muted lifeless colors, heavy emotional tension"
+        "prompt_hints": [
+          "warm cheerful lighting, vibrant uplifting tones",
+          "bright joyful atmosphere, soft golden highlights",
+          "uplifting colors, lively positive visual mood",
+          "sunlit cheerful composition, gentle warm glow",
+          "vibrant happy atmosphere, bright optimistic lighting"
+        ],
+        "negative_prompt_hints": [
+          "dark gloomy lighting",
+          "muted lifeless colors",
+          "heavy emotional tension",
+          "cold sad atmosphere",
+          "low-energy dull lighting"
+        ]
       },
 
       "excited": {
